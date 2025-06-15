@@ -1,0 +1,6 @@
+192.168.1.20 - - [11/Jun/2025:09:15:55 +0300] "GET /about HTTP/1.1" 200 842
+192.168.1.22 - - [11/Jun/2025:09:16:31 +0300] "POST /submit-form HTTP/1.1" 500 210
+[11/Jun/2025:09:17:18 +0300] SECURITY ALERT: Brute-force attempt detected
+192.168.1.25 - - [11/Jun/2025:09:18:07 +0300] "GET /contact HTTP/1.1" 200 1120
+192.168.1.20 - - [11/Jun/2025:09:19:42 +0300] "GET /images/logo.png HTTP/1.1" 304 0
+192.168.1.30 - - [11/Jun/2025:09:20:15 +0300] "GET /wp-admin HTTP/1.1" 403 225
