@@ -2,72 +2,88 @@ package main
 
 import (
 	"flag"
-	"io"
 	"log"
 	"os"
-	"path/filepath"
+	"path/filepath" // Работа с путем к логам: Папка, Файлы
+	"strings"
 )
 
-func dataProcessing(dirPath string, file os.DirEntry, check *bool) {
-	// Собираем полный путь к файлу
-	fullPath := filepath.Join(dirPath, file.Name())
-
-	// Открываем файл
-	f, err := os.Open(fullPath)
+func main() {
+	dir, keywords := parseFlags()
+	err := run(dir, keywords)
 	if err != nil {
-		log.Printf("Ошибка открытия файла %s: %v", fullPath, err)
-		return
+		log.Fatalf("Ошибка: %v", err)
 	}
-	defer f.Close()
-
-	// Читаем файл
-	data := make([]byte, 100)
-	count, err := f.Read(data)
-	if err != nil && err != io.EOF {
-		log.Printf("Ошибка чтения файла %s: %v", fullPath, err)
-		return
-	}
-
-	log.Printf("Прочитано %d байт из %s: %q\n", count, file.Name(), data[:count])
-	*check = true
 }
 
-func main() {
-	// Задаем текстовые константы вместо JSON
-	const (
-		descDir       = "Путь к директории с логами"
-		errorDir      = "Директория, которую вы ввели, не найдена"
-		errorFiles    = "Файлы не были обнаружены"
-		scanningFiles = "Сканируем файлы из папки"
-	)
-
-	// Обработка флагов
-	dir := flag.String("dir", "test-logs", descDir)
-	flag.Parse()
-
-	// Проверка существования директории
-	if _, err := os.Stat(*dir); os.IsNotExist(err) {
-		log.Fatalf("%s: %s", errorDir, *dir)
-	}
-
-	log.Printf("%s: %s", scanningFiles, *dir)
-
-	// Чтение содержимого директории
-	files, err := os.ReadDir(*dir)
+// Основная логика программы
+func run(dir string, keywords []string) error {
+	files, err := scanDirectory(dir)
 	if err != nil {
-		log.Fatalf("Ошибка чтения директории: %v", err)
+		return err
 	}
-
-	check := false // Флаг обнаружения файлов
 
 	for _, file := range files {
-		if file.IsDir() {
-			continue
+		err := processFile(dir, file, keywords)
+		if err != nil {
+			log.Printf("Ошибка обработки файла %s: %v", file.Name(), err)
 		}
-		dataProcessing(*dir, file, &check)
 	}
 
-	if !check {
-		log.Printf("%s", errorFiles)
+	return nil
+}
+
+// Парсинг Флагов командной строки
+func parseFlags() (string, []string) {
+	dir := flag.String("dir", "test-logs", "Директория с логами")
+	keywords := flag.String("keywords", "ERROR, FAIL", "Ключевые слова для поиска")
+	flag.Parse()
+
+	return *dir, strings.Split(*keywords, ",")
+}
+
+// Сканирование директории,
+// которую укзывают в командой строке
+func scanDirectory(dir string) ([]os.DirEntry, error) {
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+	return files, nil
+}
+
+// Обработка одного файла
+func processFile(dir string, file os.DirEntry, keywords []string) error {
+	if file.IsDir() {
+		return nil
+	}
+
+	fullPath := filepath.Join(dir, file.Name())
+	content, err := readFileContent(fullPath)
+	if err != nil {
+		return err
+	}
+
+	analyzeContent(content, file.Name(), keywords)
+
+	return nil
+}
+
+// Чтение содержимого файла: достаем содержимое
+func readFileContent(fullPath string) (string, error) {
+	text, err := os.ReadFile(fullPath)
+	if err != nil {
+		return "", err
+	}
+
+	return string(text), nil
+}
+
+// Анализ содержимого файла: ищем ключевые слова в файле (логе)
+func analyzeContent(content, filename string, keywords []string) {
+	for _, keyword := range keywords {
+		if strings.Contains(content, keyword) {
+			log.Printf("Найдено [%s] в файле [%s]", keyword, filename)
+		}
 	}
 }
