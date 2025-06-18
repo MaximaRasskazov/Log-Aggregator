@@ -1,68 +1,73 @@
 package main
 
-/*
-1. Обработка ошибок
-2. Логика чтения и вывода
-*/
-
 import (
-	"encoding/json"
 	"flag"
+	"io"
 	"log"
 	"os"
+	"path/filepath"
 )
 
-type Config struct {
-	DescDir       string `json:"descDir"`
-	ErrorDir      string `json:"errorDir"`
-	ErrorFiles    string `json:"errorFiles"`
-	ScanningFiles string `json:"scanningFiles"`
-}
+func dataProcessing(dirPath string, file os.DirEntry, check *bool) {
+	// Собираем полный путь к файлу
+	fullPath := filepath.Join(dirPath, file.Name())
 
-// Загрузка данных из json файла, для дальнейшего вывода
-func loadConfig(filename string) (Config, error) {
-	var config Config
+	// Открываем файл
+	f, err := os.Open(fullPath)
+	if err != nil {
+		log.Printf("Ошибка открытия файла %s: %v", fullPath, err)
+		return
+	}
+	defer f.Close()
 
-	file, _ := os.Open(filename)
-	defer file.Close()
+	// Читаем файл
+	data := make([]byte, 100)
+	count, err := f.Read(data)
+	if err != nil && err != io.EOF {
+		log.Printf("Ошибка чтения файла %s: %v", fullPath, err)
+		return
+	}
 
-	decoder := json.NewDecoder(file)
-	err := decoder.Decode(&config)
-
-	return config, err
-
-}
-
-func dataProcessing(file os.DirEntry, check *bool) {
-	log.Print(file)
+	log.Printf("Прочитано %d байт из %s: %q\n", count, file.Name(), data[:count])
 	*check = true
 }
 
 func main() {
-	config, _ := loadConfig("archive.json")
-	dir := flag.String("dir", "test-logs", config.DescDir)
+	// Задаем текстовые константы вместо JSON
+	const (
+		descDir       = "Путь к директории с логами"
+		errorDir      = "Директория, которую вы ввели, не найдена"
+		errorFiles    = "Файлы не были обнаружены"
+		scanningFiles = "Сканируем файлы из папки"
+	)
+
+	// Обработка флагов
+	dir := flag.String("dir", "test-logs", descDir)
 	flag.Parse()
 
-	// Проверка на чтение и наличие
+	// Проверка существования директории
 	if _, err := os.Stat(*dir); os.IsNotExist(err) {
-		log.Fatalf("%s %s", config.ErrorDir, *dir)
+		log.Fatalf("%s: %s", errorDir, *dir)
 	}
 
-	log.Printf("%s %s", config.ScanningFiles, *dir)
+	log.Printf("%s: %s", scanningFiles, *dir)
 
-	files, _ := os.ReadDir(*dir)
-	check := false
+	// Чтение содержимого директории
+	files, err := os.ReadDir(*dir)
+	if err != nil {
+		log.Fatalf("Ошибка чтения директории: %v", err)
+	}
+
+	check := false // Флаг обнаружения файлов
 
 	for _, file := range files {
-		// Пропускаем иттерацию, если это не файл, а директория
 		if file.IsDir() {
 			continue
 		}
-
-		dataProcessing(file, &check)
+		dataProcessing(*dir, file, &check)
 	}
 
 	if !check {
-		log.Printf("%s", config.ErrorFiles)
+		log.Printf("%s", errorFiles)
 	}
 }
