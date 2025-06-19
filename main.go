@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"log"
 	"os"
@@ -49,6 +50,7 @@ func scanDirectory(dir string) ([]os.DirEntry, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return files, nil
 }
 
@@ -59,30 +61,28 @@ func processFile(dir string, file os.DirEntry, keywords []string) error {
 	}
 
 	fullPath := filepath.Join(dir, file.Name())
-	content, err := readFileContent(fullPath)
+	openedFile, err := os.Open(fullPath)
 	if err != nil {
 		return err
 	}
 
-	analyzeContent(content, file.Name(), keywords)
+	readFileContent(openedFile, keywords, file.Name())
 
 	return nil
 }
 
-// Чтение содержимого файла: достаем содержимое
-func readFileContent(fullPath string) (string, error) {
-	text, err := os.ReadFile(fullPath)
-	if err != nil {
-		return "", err
-	}
+func readFileContent(file *os.File, keywords []string, filename string) {
+	scanner := bufio.NewScanner(file)
 
-	return string(text), nil
+	for scanner.Scan() {
+		line := scanner.Text()
+		analyzeLine(line, keywords, filename)
+	}
 }
 
-// Анализ содержимого файла: ищем ключевые слова в файле (логе)
-func analyzeContent(content, filename string, keywords []string) {
+func analyzeLine(line string, keywords []string, filename string) {
 	for _, keyword := range keywords {
-		if strings.Contains(content, keyword) {
+		if strings.Contains(line, strings.TrimSpace(keyword)) {
 			log.Printf("Найдено [%s] в файле [%s]", keyword, filename)
 		}
 	}
