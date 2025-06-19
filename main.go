@@ -34,10 +34,15 @@ func run(dir string, keywords []string) error {
 	return nil
 }
 
-// Парсинг Флагов командной строки
+// Объявляем "Флаги" дял CLI - командной строки,
+// Далее "Парсим" ввод пользователя
 func parseFlags() (string, []string) {
 	dir := flag.String("dir", "test-logs", "Директория с логами")
-	keywords := flag.String("keywords", "ERROR, FAIL", "Ключевые слова для поиска")
+	keywords := flag.String(
+		"keywords",
+		"ERROR",
+		"Ключевые слова для поиска",
+	)
 	flag.Parse()
 
 	return *dir, strings.Split(*keywords, ",")
@@ -73,17 +78,50 @@ func processFile(dir string, file os.DirEntry, keywords []string) error {
 
 func readFileContent(file *os.File, keywords []string, filename string) {
 	scanner := bufio.NewScanner(file)
+	lineNumber := 0
+	flag := 1
 
 	for scanner.Scan() {
+		lineNumber++
 		line := scanner.Text()
-		analyzeLine(line, keywords, filename)
+		analyzeLine(line, filename, keywords, lineNumber, &flag)
 	}
 }
 
-func analyzeLine(line string, keywords []string, filename string) {
-	for _, keyword := range keywords {
-		if strings.Contains(line, strings.TrimSpace(keyword)) {
-			log.Printf("Найдено [%s] в файле [%s]", keyword, filename)
+func analyzeLine(line, filename string, keywords []string, lineNumber int, f *int) {
+	for _, kw := range keywords {
+		keyword := strings.TrimSpace(kw)
+		if strings.Contains(line, keyword) {
+			var filenameColor string
+			keywordColor := colorForKeyword(keyword)
+
+			if *f == 1 {
+				filenameColor = "\033[32m"
+			} else {
+				filenameColor = "\033[0m"
+			}
+
+			log.Printf(
+				"Найдено %s[%s]\033[0m в файле %s[%s]\033[0m на строке [%d]",
+				keywordColor,
+				keyword,
+				filenameColor,
+				filename,
+				lineNumber,
+			)
+
+			*f = 0
 		}
+	}
+}
+
+func colorForKeyword(key string) string {
+	switch key {
+	case "ERROR":
+		return "\033[31m" // Красный
+	case "WARN":
+		return "\033[33m" // Жёлтый
+	default:
+		return "\033[0m" // Сброс
 	}
 }
