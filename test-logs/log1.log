@@ -4,3 +4,46 @@
 192.168.1.10 - - [11/Jun/2025:08:48:12 +0300] "GET /favicon.ico HTTP/1.1" 404 99
 ERROR: Invalid session token [11/Jun/2025:08:49:05 +0300]
 192.168.1.10 - - [11/Jun/2025:08:50:22 +0300] "DOWNLOAD /file HTTP/1.1" 405 215
+192.168.1.22 - admin [11/Jun/2025:08:51:15 +0300] "PUT /settings/profile HTTP/1.1" 200 342
+192.168.1.18 - - [11/Jun/2025:08:52:43 +0300] "GET /contact HTTP/1.1" 200 2456
+192.168.1.13 - user1 [11/Jun/2025:08:53:27 +0300] "POST /cart/add HTTP/1.1" 200 178
+192.168.1.15 - - [11/Jun/2025:08:54:12 +0300] "GET /products/123 HTTP/1.1" 200 5432
+WARNING: High memory usage detected (89%) [11/Jun/2025:08:55:01 +0300]
+192.168.1.10 - - [11/Jun/2025:08:55:33 +0300] "GET /images/logo.png HTTP/1.1" 304 -
+192.168.1.19 - - [11/Jun/2025:08:56:45 +0300] "POST /api/v1/auth HTTP/1.1" 201 321
+192.168.1.14 - admin [11/Jun/2025:08:57:22 +0300] "DELETE /users/7 HTTP/1.1" 204 0
+192.168.1.16 - - [11/Jun/2025:08:58:03 +0300] "GET /robots.txt HTTP/1.1" 200 125
+ERROR: Database connection timeout [11/Jun/2025:08:58:47 +0300]
+192.168.1.11 - user2 [11/Jun/2025:08:59:15 +0300] "PATCH /account/preferences HTTP/1.1" 200 276
+192.168.1.17 - - [11/Jun/2025:09:00:33 +0300] "HEAD /status HTTP/1.1" 200 0
+192.168.1.20 - - [11/Jun/2025:09:01:28 +0300] "GET /sitemap.xml HTTP/1.1" 200 4876
+192.168.1.10 - - [11/Jun/2025:09:02:12 +0300] "GET /styles/main.css HTTP/1.1" 200 1432
+192.168.1.13 - user1 [11/Jun/2025:09:03:45 +0300] "POST /checkout HTTP/1.1" 402 215
+INFO: Backup completed successfully [11/Jun/2025:09:04:22 +0300]
+192.168.1.15 - - [11/Jun/2025:09:05:18 +0300] "GET /products?category=electronics HTTP/1.1" 200 3789
+192.168.1.12 - - [11/Jun/2025:09:06:33 +0300] "CONNECT /proxy HTTP/1.1" 403 198
+192.168.1.14 - admin [11/Jun/2025:09:07:12 +0300] "GET /admin/dashboard HTTP/1.1" 200 5432
+WARNING: Slow response time (4.2s) for /api/v1/data [11/Jun/2025:09:08:05 +0300]
+192.168.1.19 - - [11/Jun/2025:09:09:17 +0300] "OPTIONS /api/v1 HTTP/1.1" 200 87
+192.168.1.10 - - [11/Jun/2025:09:10:22 +0300] "GET /scripts/app.js HTTP/1.1" 200 3214
+192.168.1.18 - - [11/Jun/2025:09:11:45 +0300] "TRACE /debug HTTP/1.1" 405 215
+ERROR: Failed to process payment [11/Jun/2025:09:12:33 +0300]
+192.168.1.11 - user2 [11/Jun/2025:09:13:18 +0300] "GET /account/history HTTP/1.1" 200 4321
+192.168.1.16 - - [11/Jun/2025:09:14:22 +0300] "GET /privacy HTTP/1.1" 200 1897
+192.168.1.20 - - [11/Jun/2025:09:15:05 +0300] "POST /feedback HTTP/1.1" 200 143
+INFO: New user registered (ID: 3421) [11/Jun/2025:09:16:47 +0300]
+192.168.1.13 - user1 [11/Jun/2025:09:17:33 +0300] "GET /orders/456 HTTP/1.1" 200 2765
+192.168.1.14 - admin [11/Jun/2025:09:18:12 +0300] "POST /admin/users/create HTTP/1.1" 201 321
+192.168.1.15 - - [11/Jun/2025:09:19:45 +0300] "GET /products/search?q=laptop HTTP/1.1" 200 4123
+WARNING: Unusual activity detected from IP 192.168.1.22 [11/Jun/2025:09:20:18 +0300]
+192.168.1.10 - - [11/Jun/2025:09:21:22 +0300] "GET /about HTTP/1.1" 200 3210
+192.168.1.17 - - [11/Jun/2025:09:22:33 +0300] "GET /api/v1/products HTTP/1.1" 200 5432
+192.168.1.19 - - [11/Jun/2025:09:23:15 +0300] "POST /subscribe HTTP/1.1" 200 143
+ERROR: File not found: /uploads/report.pdf [11/Jun/2025:09:24:47 +0300]
+192.168.1.12 - - [11/Jun/2025:09:25:12 +0300] "GET /terms HTTP/1.1" 200 2876
+192.168.1.11 - user2 [11/Jun/2025:09:26:33 +0300] "PUT /account/settings HTTP/1.1" 200 198
+192.168.1.18 - - [11/Jun/2025:09:27:45 +0300] "GET /images/header.jpg HTTP/1.1" 200 54321
+INFO: Scheduled maintenance in 30 minutes [11/Jun/2025:09:28:22 +0300]
+192.168.1.14 - admin [11/Jun/2025:09:29:15 +0300] "GET /admin/logs HTTP/1.1" 200 8765
+192.168.1.15 - - [11/Jun/2025:09:30:33 +0300] "GET /products/456/reviews HTTP/1.1" 200 3214
+192.168.1.20 - - [11/Jun/2025:09:31:47 +0300] "POST /api/v1/analytics HTTP/1.1" 200 143
