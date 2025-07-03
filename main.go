@@ -3,11 +3,17 @@ package main
 import (
 	"bufio"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath" // Работа с путем к логам: Папка, Файлы
 	"strings"
 )
+
+// сделать вывод в файл с указанным именем
+
+// игнор регистра ключевых слов error ERROR
+
 
 func main() {
 	dir, keywords := parseFlags()
@@ -24,20 +30,43 @@ func run(dir string, keywords []string) error {
 		return err
 	}
 
+	type result struct {
+		fileName string
+		err      error
+	}
+
+	resultChan := make(chan result, len(files))
+
+	// Чтение каждого файла из введеной директории
 	for _, file := range files {
-		err := processFile(dir, file, keywords)
-		if err != nil {
-			log.Printf("Ошибка обработки файла %s: %v", file.Name(), err)
+		go func(file os.DirEntry) {
+			err := processFile(dir, file, keywords)
+			resultChan <- result{
+				fileName: file.Name(),
+				err:      err,
+			}
+		}(file)
+	}
+
+	for i := 0; i < len(files); i++ {
+		if res := <-resultChan; res.err != nil {
+			log.Printf("Ошибка обработки файла %s: %v", res.fileName, res.err)
 		}
 	}
+
+	close(resultChan)
 
 	return nil
 }
 
-// Объявляем "Флаги" дял CLI - командной строки,
+// Объявляем "Флаги" для CLI - командной строки,
 // Далее "Парсим" ввод пользователя
 func parseFlags() (string, []string) {
-	dir := flag.String("dir", "test-logs", "Директория с логами")
+	dir := flag.String(
+		"dir", 
+		"test-logs", 
+		"Директория с логами"
+	)
 	keywords := flag.String(
 		"keywords",
 		"ERROR",
@@ -70,6 +99,7 @@ func processFile(dir string, file os.DirEntry, keywords []string) error {
 	if err != nil {
 		return err
 	}
+	defer openedFile.Close()
 
 	readFileContent(openedFile, keywords, file.Name())
 
@@ -85,6 +115,10 @@ func readFileContent(file *os.File, keywords []string, filename string) {
 		lineNumber++
 		line := scanner.Text()
 		analyzeLine(line, filename, keywords, lineNumber, &flag)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("ошибка сканирования %s: %w", filename, err)
 	}
 }
 
