@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath" // Работа с путем к логам: Папка, Файлы
@@ -13,7 +12,6 @@ import (
 // сделать вывод в файл с указанным именем
 
 // игнор регистра ключевых слов error ERROR
-
 
 func main() {
 	dir, keywords := parseFlags()
@@ -62,16 +60,8 @@ func run(dir string, keywords []string) error {
 // Объявляем "Флаги" для CLI - командной строки,
 // Далее "Парсим" ввод пользователя
 func parseFlags() (string, []string) {
-	dir := flag.String(
-		"dir", 
-		"test-logs", 
-		"Директория с логами"
-	)
-	keywords := flag.String(
-		"keywords",
-		"ERROR",
-		"Ключевые слова для поиска",
-	)
+	dir := flag.String("dir", "test-logs", "Директория с логами")
+	keywords := flag.String("keywords", "ERROR", "Ключевые слова для поиска")
 	flag.Parse()
 
 	return *dir, strings.Split(*keywords, ",")
@@ -109,52 +99,73 @@ func processFile(dir string, file os.DirEntry, keywords []string) error {
 func readFileContent(file *os.File, keywords []string, filename string) {
 	scanner := bufio.NewScanner(file)
 	lineNumber := 0
-	flag := 1
 
 	for scanner.Scan() {
 		lineNumber++
 		line := scanner.Text()
-		analyzeLine(line, filename, keywords, lineNumber, &flag)
+		analyzeLine(line, filename, keywords, lineNumber)
 	}
 
-	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("ошибка сканирования %s: %w", filename, err)
-	}
+	// if err := scanner.Err(); err != nil {
+	// 	fmt.Errorf("ошибка сканирования %s: %w", filename, err)
+	// }
 }
 
-func analyzeLine(line, filename string, keywords []string, lineNumber int, f *int) {
+func analyzeLine(line, fileName string, keywords []string, lineNumber int) {
 	for _, kw := range keywords {
 		keyword := strings.TrimSpace(kw)
-		if strings.Contains(line, keyword) {
-			var filenameColor string
-			keywordColor := colorForKeyword(keyword)
+		if keyword == "" {
+			continue
+		}
 
-			if *f == 1 {
-				filenameColor = "\033[32m"
-			} else {
-				filenameColor = "\033[0m"
+		keywordLower := strings.ToLower(keyword)
+		lineLower := strings.ToLower(line)
+		keywordLen := len(keywordLower)
+
+		if keywordLen == 0 {
+			continue
+		}
+
+		start := 0
+		for {
+			// Ищем вхождение в подстроке (начиная с позиции start)
+			idx := strings.Index(lineLower[start:], keywordLower)
+			if idx == -1 {
+				break
 			}
 
+			// Реальная позиция в оригинальной строке
+			realIdx := start + idx
+			foundWord := line[realIdx : realIdx+keywordLen]
+			keywordColor := colorForKeyword(keyword)
+
 			log.Printf(
-				"Найдено %s[%s]\033[0m в файле %s[%s]\033[0m на строке [%d]",
+				"Найдено %s[%s]\033[0m в файле [%s]\033[0m на строке [%d]",
 				keywordColor,
-				keyword,
-				filenameColor,
-				filename,
+				foundWord,
+				fileName,
 				lineNumber,
 			)
 
-			*f = 0
+			// Перемещаем позицию поиска
+			start = realIdx + keywordLen
+
+			// Проверяем выход за границы строки
+			if start >= len(lineLower) {
+				break
+			}
 		}
 	}
 }
 
 func colorForKeyword(key string) string {
-	switch key {
+	switch strings.ToUpper(key) {
 	case "ERROR":
 		return "\033[31m" // Красный
-	case "WARN":
+	case "WARNING":
 		return "\033[33m" // Жёлтый
+	case "INFO":
+		return "\033[32m"
 	default:
 		return "\033[0m" // Сброс
 	}
