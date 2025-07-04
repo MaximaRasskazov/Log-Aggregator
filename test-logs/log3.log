@@ -1,0 +1,22 @@
+192.168.1.10 - - [11/Jun/2025:08:45:22 +0300] "GET /home HTTP/1.1" 200 1432
+192.168.1.12 - - [11/Jun/2025:08:46:01 +0300] "POST /login HTTP/1.1" 401 125
+192.168.1.15 - - [11/Jun/2025:08:47:33 +0300] "GET /products HTTP/1.1" 200 3789
+192.168.1.10 - - [11/Jun/2025:08:48:12 +0300] "GET /favicon.ico HTTP/1.1" 404 99
+ERROR: Invalid session token [11/Jun/2025:08:49:05 +0300]
+192.168.1.10 - - [11/Jun/2025:08:50:22 +0300] "DOWNLOAD /file HTTP/1.1" 405 215
+192.168.1.22 - admin [11/Jun/2025:08:51:15 +0300] "PUT /settings/profile HTTP/1.1" 200 342
+192.168.1.18 - - [11/Jun/2025:08:52:43 +0300] "GET /contact HTTP/1.1" 200 2456
+192.168.1.13 - user1 [11/Jun/2025:08:53:27 +0300] "POST /cart/add HTTP/1.1" 200 178
+192.168.1.15 - - [11/Jun/2025:08:54:12 +0300] "GET /products/123 HTTP/1.1" 200 5432
+WARNING: High memory usage detected (89%) [11/Jun/2025:08:55:01 +0300]
+192.168.1.10 - - [11/Jun/2025:08:55:33 +0300] "GET /images/logo.png HTTP/1.1" 304 -
+192.168.1.19 - - [11/Jun/2025:08:56:45 +0300] "POST /api/v1/auth HTTP/1.1" 201 321
+192.168.1.14 - admin [11/Jun/2025:08:57:22 +0300] "DELETE /users/7 HTTP/1.1" 204 0
+192.168.1.16 - - [11/Jun/2025:08:58:03 +0300] "GET /robots.txt HTTP/1.1" 200 125
+ERROR: Database connection timeout [11/Jun/2025:08:58:47 +0300]
+192.168.1.11 - user2 [11/Jun/2025:08:59:15 +0300] "PATCH /account/preferences HTTP/1.1" 200 276
+192.168.1.17 - - [11/Jun/2025:09:00:33 +0300] "HEAD /status HTTP/1.1" 200 0
+192.168.1.20 - - [11/Jun/2025:09:01:28 +0300] "GET /sitemap.xml HTTP/1.1" 200 4876
+192.168.1.10 - - [11/Jun/2025:09:02:12 +0300] "GET /styles/main.css HTTP/1.1" 200 1432
+192.168.1.13 - user1 [11/Jun/2025:09:03:45 +0300] "POST /checkout HTTP/1.1" 402 215
+INFO: Backup completed successfully [11/Jun/2025:09:04:22 +0300]
