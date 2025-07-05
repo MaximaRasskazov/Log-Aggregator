@@ -3,18 +3,40 @@ package main
 import (
 	"flag"
 	"log"
-	"os" // Работа с путем к логам: Папка, Файлы
+	"os"
 	"strings"
+	"time"
 )
 
 // сделать вывод в файл с указанным именем
+// сделать канал для логов
+
+type logEntry struct {
+	File    string
+	Line    int
+	Keyword string
+	Message string
+	Time    time.Time
+}
 
 func main() {
+	logChan := make(chan logEntry, 1000)
+	defer close(logChan)
+
+	go logWriter(logChan)
+
 	dir, keywords := parseFlags()
-	err := run(dir, keywords)
+
+	log.Printf("Сканируем директорию: %s", dir)
+	log.Printf("Ищем ключевые слова: %v", keywords)
+
+	err := run(logChan, dir, keywords)
 	if err != nil {
 		log.Fatalf("Ошибка: %v", err)
 	}
+
+	time.Sleep(2 * time.Second)
+	log.Println("Программа завершена")
 }
 
 // Объявляем "Флаги" для CLI - командной строки,
@@ -28,7 +50,7 @@ func parseFlags() (string, []string) {
 }
 
 // Основная логика программы
-func run(dir string, keywords []string) error {
+func run(logChan chan<- logEntry, dir string, keywords []string) error {
 	files, err := scanDirectory(dir)
 	if err != nil {
 		return err
@@ -44,7 +66,7 @@ func run(dir string, keywords []string) error {
 	// Чтение каждого файла из введеной директории
 	for _, file := range files {
 		go func(file os.DirEntry) {
-			err := processFile(dir, file, keywords)
+			err := processFile(dir, file, keywords, logChan)
 			resultChan <- result{
 				fileName: file.Name(),
 				err:      err,

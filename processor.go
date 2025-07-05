@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"os"
-	"path/filepath"
+	"path/filepath" // Работа с путем к логам: Папка, Файлы
 )
 
 // Сканирование директории,
@@ -18,7 +18,7 @@ func scanDirectory(dir string) ([]os.DirEntry, error) {
 }
 
 // Обработка одного файла
-func processFile(dir string, file os.DirEntry, keywords []string) error {
+func processFile(dir string, file os.DirEntry, keywords []string, logChan chan<- logEntry) error {
 	if file.IsDir() {
 		return nil
 	}
@@ -30,19 +30,19 @@ func processFile(dir string, file os.DirEntry, keywords []string) error {
 	}
 	defer openedFile.Close()
 
-	readFileContent(openedFile, keywords, file.Name())
+	readFileContent(openedFile, keywords, file.Name(), logChan)
 
 	return nil
 }
 
-func readFileContent(file *os.File, keywords []string, filename string) {
+func readFileContent(file *os.File, keywords []string, filename string, logChan chan<- logEntry) {
 	scanner := bufio.NewScanner(file)
 	lineNumber := 0
 
 	for scanner.Scan() {
 		lineNumber++
 		line := scanner.Text()
-		analyzeLine(line, filename, keywords, lineNumber)
+		analyzeLine(line, filename, keywords, lineNumber, logChan)
 	}
 
 	// if err := scanner.Err(); err != nil {

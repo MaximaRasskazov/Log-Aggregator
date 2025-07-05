@@ -1,19 +1,20 @@
 package main
 
 import (
-	"log"
 	"strings"
+	"time"
 )
 
-func analyzeLine(line, fileName string, keywords []string, lineNumber int) {
-	for _, kw := range keywords {
-		keyword := strings.TrimSpace(kw)
+func analyzeLine(line, fileName string, keywords []string, lineNumber int, logChan chan<- logEntry) {
+	lineLower := strings.ToLower(line)
+
+	for _, keyword := range keywords {
+		keyword := strings.TrimSpace(keyword)
 		if keyword == "" {
 			continue
 		}
 
 		keywordLower := strings.ToLower(keyword)
-		lineLower := strings.ToLower(line)
 		keywordLen := len(keywordLower)
 
 		if keywordLen == 0 {
@@ -31,15 +32,16 @@ func analyzeLine(line, fileName string, keywords []string, lineNumber int) {
 			// Реальная позиция в оригинальной строке
 			realIdx := start + idx
 			foundWord := line[realIdx : realIdx+keywordLen]
-			keywordColor := colorForKeyword(keyword)
 
-			log.Printf(
-				"Найдено %s[%s]\033[0m в файле [%s]\033[0m на строке [%d]",
-				keywordColor,
-				foundWord,
-				fileName,
-				lineNumber,
-			)
+			logChan <- logEntry{
+				File:    fileName,
+				Line:    lineNumber,
+				Keyword: keyword,
+				Message: foundWord,
+				Time:    time.Now(),
+			}
+
+			time.Sleep(1 * time.Second)
 
 			// Перемещаем позицию поиска
 			start = realIdx + keywordLen
