@@ -8,9 +8,6 @@ import (
 	"time"
 )
 
-// сделать вывод в файл с указанным именем
-// сделать канал для логов
-
 type logEntry struct {
 	File    string
 	Line    int
