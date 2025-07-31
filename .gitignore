@@ -1,1 +1,11 @@
-example.go
+# Исполняемые файлы
+*.exe
+*.test
+log-aggregator
+
+# Результаты работы
+output.txt
+
+# Профили
+*.prof
+*.out
