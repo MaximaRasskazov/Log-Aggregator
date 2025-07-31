@@ -73,7 +73,7 @@ func run(logChan chan<- logEntry, dir string, keywords []string) error {
 
 	for i := 0; i < len(files); i++ {
 		if res := <-resultChan; res.err != nil {
-			log.Printf("Ошибка обработки файла %s: %v", res.fileName, res.err)
+			log.Printf("Ошибка в обработке файла %s: %v", res.fileName, res.err)
 		}
 	}
 
