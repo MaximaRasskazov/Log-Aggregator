@@ -37,7 +37,6 @@ func logWriter(logChan <-chan logEntry) {
 }
 
 func writeBatch(entries []logEntry) {
-	// Сортировка по времени (можно изменить критерий)
 	sort.Slice(entries, func(i, j int) bool {
 		return entries[i].Time.Before(entries[j].Time)
 	})
